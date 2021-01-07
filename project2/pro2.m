@@ -1,83 +1,62 @@
-
 clc
-% %Rosenblatt's Perecptron
+%import our Calculate Data
 load data.mat;
+%inicialate size of training and total size
+NumTraining=18;
+TotalSize=20;
+%divide our x in train and test
+xtrain=x(1:NumTraining,:); 
+ytrain=y(1:NumTraining);
 
-[m n]=size(x);
-%training data
- xtrain=x(1:18,:); 
- ytrain=y(1:18);
-% test data
-xt=x(19:m,:); 
-yt=y(19:m);
-%=====================================
-% Train the perceptron
-%=====================================
+xtest=x(NumTraining+1:TotalSize,:); 
+ytest=y(NumTraining+1:TotalSize);
 
+%train
 
-
-
-tic
 [l,p]=size(xtrain);
-w=zeros(p,1);  % initialize weights
-b=0;          % initialize bias
-ier=1;        % initialize a misclassification indicator
-pass=0;       % number of iterations
-n=0.8;        % learning rate
-r=max(sqrt(sum(xtrain))); % max norm
+w=zeros(p,1); 
+b=0;         
+pass=0;       
+n=0.8;        
+r=max(sqrt(sum(xtrain))); 
 
-while sign(w'*xtrain' -b ) ~= ytrain %repeat until no error
-       ier=0; 
-       e=0; % number of training errors
-       for i=1:l  % a pass through x           
-           xx=xtrain(i,:);
-           ey=xx*w - b; % estimated y
-          
-
-           if sign(ey)~= ytrain(i)
-              w=w'+(n*ytrain(i))*(xtrain(i,:)); % don't know why itdoes npt work              
-              b=b-(n*ytrain(i)*(r^2));       % don't know why itdoes npt work               
-              e=e+1 ; % number of training errors
-              w=w';   
-           end
-       end
-       ee=e;    % number of training errors
-       if ee>0  % cuntinue if there is still errors
-          ier=1;           
-       end
-       pass=pass+1; % stop after 10000 iterations
-       if pass==10000
-          ier=0;
-          pass=0;
-       end
+while sign(w'*xtrain' -b ) ~= ytrain 
+    
+ errors=0; 
+ for i=1:l           
+  
+   if sign(xtrain(i,:)*w - b)~= ytrain(i)
+     w=w'+(n*ytrain(i))*(xtrain(i,:));               
+     b=b-(n*ytrain(i)*(r^2));                   
+     errors=errors+1 ; 
+     w=w';   
+   end
+ end
+ totalerrors=errors;   
+   
 end
-fprintf("%i    %i    %i",w,b,pass);
-disp(['Training_Errors=' num2str(e) '     Training data Size=' num2str(l)])
-toc
-Iterations=pass;
-%==========================================
-% Testing phase
-%==========================================
+fprintf("Training Error: %i \n",totalerrors);
 
-[l,p]=size(xt);
-e=0; % number of test errors
+
+%test
+
+[l,p]=size(xtest);
+errors=0; 
 for i=1:l          
-    xx=xt(i,:); % take one row
-    ey=xx*w-b; % apply the perceptron classification rule
-
-    if yt(i)~=sign(ey)
-       e=e+1;
-    end
+   if ytest(i)~=sign(xtest(i,:)*w-b)
+       errors=errors+1;
+   end
 end
+totalerrors=errors;  
+fprintf("Test Errors: %i \n",totalerrors);
 
-disp(['Test_Errors=' num2str(e) '     Test Data Size= ' num2str(10)])
 
-
+%plot 
 
  l=y==0;
  hold on
- plot(x(l,1),x(l,2),'k.' );
- plot(x(~l,1),x(~l,2),'g.');
+ plot(x(l,1),x(l,2),'o' );
+ plot(x(~l,1),x(~l,2),'o');
  [l,p]=size(x);
  plot([0,1],[0,1],'r-')
  axis([0 1 0 1]), axis square, grid on
