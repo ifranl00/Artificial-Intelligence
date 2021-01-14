@@ -1,63 +1,135 @@
 clc
+close all
 %import our Calculate Data
 load data.mat;
-%inicialate size of training and total size
-NumTraining=18;
-TotalSize=20;
-%divide our x in train and test
-xtrain=x(1:NumTraining,:); 
-ytrain=y(1:NumTraining);
 
-xtest=x(NumTraining+1:TotalSize,:); 
-ytest=y(NumTraining+1:TotalSize);
+% **************************TRAIN*****************************
 
-%train
+fprintf('\n');
+fprintf('**********************************************************************\n');
+fprintf('******************************** TRAIN *******************************\n');
+fprintf('**********************************************************************\n');
+fprintf('\n');
 
-[l,p]=size(xtrain);
-w=zeros(p,1); 
-b=0;         
-pass=0;       
-n=0.8;        
-r=max(sqrt(sum(xtrain))); 
+tic
+[l,p]=size(x);
+w=[max(max(x));0]; %I start with the max value from w equeal to the max x in the data given.
+b=0;            
+n=0.1;        %LEARNING RATE
+r=max(sqrt(sum(x))); 
+iteration=1;
+TotalError=1;
 
-while sign(w'*xtrain' -b ) ~= ytrain 
+while TotalError~=0 %Repeat while the algorith is not correctly trained.
+ 
+    %TRAIN CODE
+    for i=1:l  %repeat for each element(20) 
     
- errors=0; 
- for i=1:l           
-  
-   if sign(xtrain(i,:)*w - b)~= ytrain(i)
-     w=w'+(n*ytrain(i))*(xtrain(i,:));               
-     b=b-(n*ytrain(i)*(r^2));                   
-     errors=errors+1 ; 
-     w=w';   
-   end
- end
- totalerrors=errors;   
+        %Plot bias and Weight value from each iteration.
+        figure(80);
+        subplot(3,1,1);
+        hold on;
+        title('Bias')
+        ylabel('Bias Value');
+        xlabel('Iterations');
+        totalIteration= 20*(iteration-1)+i;
+        plot(totalIteration,b,'b.'); %%PLOT AN ERROR
+        grid on
+
+        subplot(3,1,2);
+        hold on;  
+        title('Weight x')
+        ylabel('Weight x Value');
+        xlabel('Iterations');
+        plot(totalIteration,w(2),'b.'); 
+        grid on
+
+        subplot(3,1,3);
+        hold on;  
+        title('Weight y')
+        ylabel('Weight y Value');
+        xlabel('Iterations');
+        plot(totalIteration,w(1),'b.'); 
+        grid on
+
    
-end
-fprintf("Training Error: %i \n",totalerrors);
+       if sign(x(i,:)*w - b)~= y(i) %if the perceptron is wrong, then change value from w and b
+           w=w'+n*y(i)*(x(i,:));               
+           b=b-n*y(i)*(r^2);                   
+           w=w';   
+       end
+    end
+ 
+   %TEST CODE
+   
+   TP = 0; %True positive
+   TN = 0; %True Negative
+   FP = 0; %False Positive
+   FN = 0; %False Negative
+    
+   %For each iteration generate an individual graph when we can see the
+   %value from W and the errors
+   
+   figure(iteration);
+   hold on;
+   title('Binary classification')
+   ylabel('y');
+   xlabel('x');
+   
+    for i=1:l          
+       if y(i)~=sign(x(i,:)*w-b) %If is wrong
+           if y(i)== -1 %the result must we negative and the perceptron return positive, so we have an False Positive
+              FP = FP + 1;
+              plot(x(i,1),x(i,2),'r+' ); %%PLOT AN False positive
+           else %the result must we positive and the perceptron return negative, so we have an False Negative
+              plot(x(i,1),x(i,2),'r_' ); %%PLOT AN False Negative
+              FN = FN + 1;
+           end
+       else %If the perceptron have a good prediction
+          
+           if y(i)== -1 %If the result is negative It is a True Negative
+               plot(x(i,1),x(i,2),'g_' );
+               TN = TN +1;
+           else     %If it is positive is a True Positive
+               TP = TP +1;
+               plot(x(i,1),x(i,2),'g+' );
+           end
 
+       end
+    end
 
-%test
+     plot([0,(w(2))],[0,(w(1))],'r-') %plot the 
 
-[l,p]=size(xtest);
-errors=0; 
-for i=1:l          
-   if ytest(i)~=sign(xtest(i,:)*w-b)
-       errors=errors+1;
-   end
-end
-totalerrors=errors;  
-fprintf("Test Errors: %i \n",totalerrors);
-
-
-%plot 
-
- l=y==0;
- hold on
- plot(x(l,1),x(l,2),'o' );
- plot(x(~l,1),x(~l,2),'o');
- [l,p]=size(x);
- plot([0,1],[0,1],'r-')
- axis([0 1 0 1]), axis square, grid on
+ axis([-2 2 -2 2]), axis square, grid on
  drawnow
+
+ 
+    TotalError= FP+FN;
+
+    accuracie = (TP+TN)/(TP+TN+FP+FN);
+
+ 
+    fprintf('\n');
+    fprintf('***************** ITERATION %d ******************\n',iteration);
+    fprintf('\n');
+    fprintf("Errors: %i  %d  \n",TotalError);
+
+    fprintf(' ACCURACY = %4.2f \n', accuracie);
+    fprintf('\n');
+    iteration= iteration+1;
+    
+
+    
+    
+    
+    
+    
+    
+
+end
+
+toc
+
+
+% ************************PLOT*******************************
+ 
