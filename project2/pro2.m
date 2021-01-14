@@ -15,14 +15,15 @@ tic
 [l,p]=size(x);
 w=[max(max(x));0]; %I start with the max value from w equeal to the max x in the data given.
 b=0;            
-n=0.1;        %LEARNING RATE
+n=0.9;        %LEARNING RATE
 r=max(sqrt(sum(x))); 
 iteration=1;
+SumErrors=0;
 TotalError=1;
 
+    %TRAIN CODE
 while TotalError~=0 %Repeat while the algorith is not correctly trained.
  
-    %TRAIN CODE
     for i=1:l  %repeat for each element(20) 
     
         %Plot bias and Weight value from each iteration.
@@ -33,7 +34,7 @@ while TotalError~=0 %Repeat while the algorith is not correctly trained.
         ylabel('Bias Value');
         xlabel('Iterations');
         totalIteration= 20*(iteration-1)+i;
-        plot(totalIteration,b,'b.'); %%PLOT AN ERROR
+        plot(totalIteration,b,'b.'); 
         grid on
 
         subplot(3,1,2);
@@ -68,8 +69,7 @@ while TotalError~=0 %Repeat while the algorith is not correctly trained.
    FN = 0; %False Negative
     
    %For each iteration generate an individual graph when we can see the
-   %value from W and the errors
-   
+   %value from W and the errors  
    figure(iteration);
    hold on;
    title('Binary classification')
@@ -98,38 +98,29 @@ while TotalError~=0 %Repeat while the algorith is not correctly trained.
        end
     end
 
-     plot([0,(w(2))],[0,(w(1))],'r-') %plot the 
-
- axis([-2 2 -2 2]), axis square, grid on
- drawnow
-
- 
+    plot([0,(w(2))],[0,(w(1))],'r-') %plot the Weight line
+    axis([-2 2 -2 2]), axis square, grid on
+    drawnow
+    
     TotalError= FP+FN;
-
+    SumErrors= SumErrors+TotalError;
     accuracie = (TP+TN)/(TP+TN+FP+FN);
-
  
     fprintf('\n');
     fprintf('***************** ITERATION %d ******************\n',iteration);
     fprintf('\n');
-    fprintf("Errors: %i  %d  \n",TotalError);
+    fprintf("False Negative: %i \nFalse Positive: %i  \n",FN,FP);
+    fprintf("True Negative: %i \nTrue Positive: %i   \n",TN,TP);
+    fprintf("\nTotal Errors in this iteration: %i \n",TotalError);
 
-    fprintf(' ACCURACY = %4.2f \n', accuracie);
+    fprintf('ACCURACY = %4.2f \n', accuracie);
     fprintf('\n');
     iteration= iteration+1;
     
 
-    
-    
-    
-    
-    
-    
-
 end
 
+fprintf("\nErrors in TOTAL: %i \n",SumErrors);
 toc
 
-
-% ************************PLOT*******************************
  
