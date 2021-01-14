@@ -3,21 +3,13 @@ close all
 %import our Calculate Data
 load data.mat;
 
-% **************************TRAIN*****************************
-
-fprintf('\n');
-fprintf('**********************************************************************\n');
-fprintf('******************************** TRAIN *******************************\n');
-fprintf('**********************************************************************\n');
-fprintf('\n');
-
 tic
 [l,p]=size(x);
-w=[max(max(x));0]; %I start with the max value from w equeal to the max x in the data given.
+w=[-max(max(x));-max(max(x))]; %I start with the max value from w equeal to the max x in the data given.
 b=0;            
-n=0.9;        %LEARNING RATE
+n=0.1;        %LEARNING RATE
 r=max(sqrt(sum(x))); 
-iteration=1;
+cycle=1;
 SumErrors=0;
 TotalError=1;
 
@@ -33,7 +25,7 @@ while TotalError~=0 %Repeat while the algorith is not correctly trained.
         title('Bias')
         ylabel('Bias Value');
         xlabel('Iterations');
-        totalIteration= 20*(iteration-1)+i;
+        totalIteration= 20*(cycle-1)+i;
         plot(totalIteration,b,'b.'); 
         grid on
 
@@ -68,9 +60,9 @@ while TotalError~=0 %Repeat while the algorith is not correctly trained.
    FP = 0; %False Positive
    FN = 0; %False Negative
     
-   %For each iteration generate an individual graph when we can see the
+   %For each cycle generate an individual graph when we can see the
    %value from W and the errors  
-   figure(iteration);
+   figure(cycle);
    hold on;
    title('Binary classification')
    ylabel('y');
@@ -97,9 +89,12 @@ while TotalError~=0 %Repeat while the algorith is not correctly trained.
 
        end
     end
-
-    plot([0,(w(2))],[0,(w(1))],'r-') %plot the Weight line
-    axis([-2 2 -2 2]), axis square, grid on
+    xplot = -15:15;
+    m = -(b / w(2)) / (b / w(1));
+    yplot=(m*xplot)+(b/w(2)); %
+    plot(xplot,yplot,'r-') %plot the Weight line
+     
+    axis([-2 2 -2 2]), axis equal, grid on
     drawnow
     
     TotalError= FP+FN;
@@ -107,20 +102,21 @@ while TotalError~=0 %Repeat while the algorith is not correctly trained.
     accuracie = (TP+TN)/(TP+TN+FP+FN);
  
     fprintf('\n');
-    fprintf('***************** ITERATION %d ******************\n',iteration);
+    fprintf('***************** CYCLE %d ******************\n',cycle);
     fprintf('\n');
     fprintf("False Negative: %i \nFalse Positive: %i  \n",FN,FP);
     fprintf("True Negative: %i \nTrue Positive: %i   \n",TN,TP);
-    fprintf("\nTotal Errors in this iteration: %i \n",TotalError);
+    fprintf("\nTotal Errors in this cycle: %i \n",TotalError);
 
     fprintf('ACCURACY = %4.2f \n', accuracie);
     fprintf('\n');
-    iteration= iteration+1;
+    cycle= cycle+1;
     
 
 end
 
 fprintf("\nErrors in TOTAL: %i \n",SumErrors);
 toc
+
 
  
