@@ -5,7 +5,7 @@ load data.mat;
 
 tic
 [l,p]=size(x);
-w=[-max(max(x));-max(max(x))]; %I start with the max value from w equeal to the max x in the data given.
+w=[0;-(max(max(x)))]; %I start with the max value from w equeal to the max x in the data given.
 b=0;            
 n=0.1;        %LEARNING RATE
 r=max(sqrt(sum(x))); 
@@ -24,7 +24,7 @@ while TotalError~=0 %Repeat while the algorith is not correctly trained.
         hold on;
         title('Bias')
         ylabel('Bias Value');
-        xlabel('Iterations');
+        xlabel('Iterations'); 
         totalIteration= 20*(cycle-1)+i;
         plot(totalIteration,b,'b.'); 
         grid on
@@ -91,10 +91,9 @@ while TotalError~=0 %Repeat while the algorith is not correctly trained.
     end
     xplot = -15:15;
     m = -(b / w(2)) / (b / w(1));
-    yplot=(m*xplot)+(b/w(2)); %
+    yplot=(m*xplot)+(b/w(2)); 
     plot(xplot,yplot,'r-') %plot the Weight line
-     
-    axis([-2 2 -2 2]), axis equal, grid on
+    axis([-2 2 -2 2]), axis square, grid on
     drawnow
     
     TotalError= FP+FN;
